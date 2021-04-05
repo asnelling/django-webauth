@@ -1,0 +1,8 @@
+/.vscode/
+
+/build/
+/dist/
+/django_webauth.egg-info/
+
+__pycache__/
+*.pyc

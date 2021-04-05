@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block title %}Authenticate With Key{% endblock %}
+
+{% block content %}
+  <div class="row">
+    <div class="col">
+      <h2>Authenticate With Key</h2>
+      <form method="post" id="credential-form">{% csrf_token %}
+        {{ form.as_p }}
+      </form>
+    </div>
+  </div>
+
+  <script id="credential_assertion_options" type="application/json">{{ options|safe }}</script>
+
+  {% load static %}
+  <script src="{% static 'webauth/lib.js' %}"></script>
+  <script>
+    window.addEventListener("load", beginAssertion);
+  </script>
+{% endblock %}
