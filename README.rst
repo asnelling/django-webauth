@@ -4,8 +4,6 @@ WebAuth
 
 Two Factor Authentication in Django using Web Authentication API (WebAuthn).
 
-Detailed documentation is in the "docs" directory.
-
 Quick start
 -----------
 
