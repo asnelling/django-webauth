@@ -36,7 +36,7 @@ Multi-Factor Authentication (MFA, 2FA) for Django using the
 4. Add Web Authentication protection to your views. How you do this depends on
    whether you're protecting function views or class based views:
 
-    A.  **To protect view functions:**
+    1.  **To protect view functions:**
 
         Add the `@webauth_required` decorator to disallow users that have not
         authenticated with webauth.
@@ -50,7 +50,7 @@ Multi-Factor Authentication (MFA, 2FA) for Django using the
             ...
         ```
 
-    B.  **To protect class based views:**
+    2.  **To protect class based views:**
 
         Add `WebAuthRequiredMixin` to the inheritance list on your view classes.
 
