@@ -5,6 +5,11 @@ Multi-Factor Authentication (MFA, 2FA) for Django using the
 
 ![django-webauth demo](https://raw.githubusercontent.com/asnelling/django-webauth/master/demo.gif)
 
+### Security Disclaimer
+
+This alpha stage software is **not production ready** and requires further
+hardening before it can be safely deployed into the wild.
+
 ## Quick Start
 
 1. Install `django-webauth` using pip
@@ -36,31 +41,31 @@ Multi-Factor Authentication (MFA, 2FA) for Django using the
 4. Add Web Authentication protection to your views. How you do this depends on
    whether you're protecting function views or class based views:
 
-    1.  **To protect view functions:**
+    1. **To protect view functions:**
 
-        Add the `@webauth_required` decorator to disallow users that have not
-        authenticated with webauth.
+       Add the `@webauth_required` decorator to disallow users that have not
+       authenticated with webauth.
 
-        ```Python
-        # views.py
-        from webauth.decorators import webauth_required
+       ```Python
+       # views.py
+       from webauth.decorators import webauth_required
 
-        @webauth_required
-        def private_view(request):
-            ...
-        ```
+       @webauth_required
+       def private_view(request):
+           ...
+       ```
 
-    2.  **To protect class based views:**
+    2. **To protect class based views:**
 
-        Add `WebAuthRequiredMixin` to the inheritance list on your view classes.
+       Add `WebAuthRequiredMixin` to the inheritance list on your view classes.
 
-        ```Python
-        # views.py
-        from webauth.mixins import WebAuthRequiredMixin
+       ```Python
+       # views.py
+       from webauth.mixins import WebAuthRequiredMixin
 
-        class YourClassBasedView(WebAuthRequiredMixin, View):
-            ...
-        ```
+       class YourClassBasedView(WebAuthRequiredMixin, View):
+           ...
+       ```
 
 5. Set some required `django-webauth` settings
 
@@ -82,9 +87,8 @@ Multi-Factor Authentication (MFA, 2FA) for Django using the
    http://localhost:8000/webauth/register/
 
 8. Navigate to a view you protected in step 4. `django-webauth` will redirect
-   you to a page that will attempt to authenticate using your newly created
-   key. If successful, you will be redirected to the protected view.
-
+   you to a page that will attempt to authenticate using your newly created key.
+   If successful, you will be redirected to the protected view.
 
 ## Customizing the built-in templates
 
@@ -101,8 +105,8 @@ with your own using the same method.
 
 ## Configuration settings
 
-[`WEBAUTH_RP_ID`][rp_id]: the hostname (minus scheme and port) of the server running
-your Django app
+[`WEBAUTH_RP_ID`][rp_id]: the hostname (minus scheme and port) of the server
+running your Django app
 
 [`WEBAUTH_RP_NAME`][rp_name]: human readable name of your server intended only
 for display
@@ -115,7 +119,11 @@ redirect users here when they request a protected view. This "login" page
 completes the multi-factor authentication flow.
 
 [api]: https://w3c.github.io/webauthn/
+
 [templates]: https://docs.djangoproject.com/en/4.0/howto/overriding-templates/
+
 [rp_id]: https://w3c.github.io/webauthn/#rp-id
+
 [rp_name]: https://w3c.github.io/webauthn/#dom-publickeycredentialentity-name
+
 [origin]: https://w3c.github.io/webauthn/#dom-collectedclientdata-origin
