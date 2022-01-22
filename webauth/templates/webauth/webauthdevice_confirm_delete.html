@@ -1,0 +1,27 @@
+{% extends "webauth/base.html" %}
+
+{% block title %}Deleting Security Key{% endblock %}
+
+{% block content %}
+  <div class="row justify-content-md-center">
+    <div class="col col-lg-6">
+      <div class="card shadow bg-light">
+        <h4 class="card-header">Deleting Security Key</h4>
+        <div class="card-body">
+          <p class="card-text">Confirm that below is the correct security key to remove.</p>
+        </div>
+        <dl class="row card-body">
+          <dt class="col-md-3">Name</dt>
+          <dd class="col-md-9">{{ object.name }}</dd>
+
+          <dt class="col-md-3">Created At</dt>
+          <dd class="col-md-9">{{ object.created_at }}</dd>
+        </dl>
+        <form class="card-body" method="post" action="{% url 'webauth:delete' pk=object.id %}">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-danger">Delete Key</button>
+        </form>
+      </div>
+    </div>
+  </div>
+{% endblock %}

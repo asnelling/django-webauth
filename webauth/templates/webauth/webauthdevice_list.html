@@ -1,0 +1,120 @@
+{% extends "webauth/base.html" %}
+
+{% block title %}Security Keys{% endblock %}
+
+{% block content %}
+  <div class="row justify-content-md-center">
+    <div class="col col-lg-6">
+      <div class="card shadow bg-light">
+        <h4 class="card-header">Add a security key</h4>
+        <div class="row card-body">
+          <div class="col-auto">
+            <input id="device-name" type="text" class="form-control"
+                   placeholder="Nickname">
+          </div>
+          <div class="col-auto">
+            <button id="add-device" type="button" class="btn btn-primary">Add
+            </button>
+          </div>
+        </div>
+        <h4 class="card-header">Linked keys</h4>
+        <ul class="list-group list-group-flush">
+          {% for device in object_list %}
+            <li class="list-group-item d-flex justify-content-between">
+              {{ device.name }} - {{ device.created_at }}
+              <a class="text-danger text-decoration-none fs-6" href="{% url 'webauth:delete' pk=device.id %}">&#215;</a>
+            </li>
+          {% empty %}
+            <li class="list-group-item">No keys registered.</li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+  </div>
+  <script>
+    async function add_device_clicked() {
+      try {
+        const response = await fetch("{% url 'webauth:registration' %}");
+        const args = await response.json();
+        await creation_args_retrieved(args);
+      } catch (e) {
+        console.error("retrieving creation args failed", e);
+      }
+    }
+
+    async function creation_args_retrieved(args) {
+      args.publicKey.user.id = hex_to_binary(args.publicKey.user.id);
+      args.publicKey.challenge = hex_to_binary(args.publicKey.challenge).buffer;
+
+      try {
+        const response = await navigator.credentials.create(args);
+        await save_device_to_server(response);
+      } catch (e) {
+        console.error("creating credential failed", e);
+      }
+    }
+
+    async function save_device_to_server(pubKeyCredential) {
+      let data = {
+        name: document.getElementById("device-name").value,
+        pubKeyCredential: {
+          id: pubKeyCredential.id,
+          rawId: buf_to_base64(pubKeyCredential.rawId),
+          response: {
+            attestationObject: buf_to_base64(pubKeyCredential.response.attestationObject),
+            clientDataJSON: buf_to_base64(pubKeyCredential.response.clientDataJSON),
+          },
+          type: pubKeyCredential.type,
+        },
+      };
+      await fetch("{% url 'webauth:registration' %}", {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+          "X-CSRFToken": getCookie("csrftoken"),
+        },
+        body: JSON.stringify(data),
+      });
+      window.location.reload();
+    }
+
+    document.getElementById("add-device").addEventListener("click", add_device_clicked);
+
+    function hex_to_binary(hex_str) {
+      const a = hex_str.match(/.{2}/g)
+          .map(c => parseInt(c, 16));
+      return new Uint8Array(a);
+    }
+
+    function buf_to_base64(buffer) {
+      const a = new Uint8Array(buffer);
+      let s = "";
+
+      for (const n of a) {
+        s += String.fromCharCode(n);
+      }
+
+      return btoa(s)
+          .replace(/\+/g, "-")
+          .replace(/\//g, "_")
+          .replace(/=/g, "");
+    }
+
+    function getCookie(name) {
+      let cookieValue = null;
+      if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+          const cookie = cookies[i].trim();
+          // Does this cookie string begin with the name we want?
+          if (cookie.substring(0, name.length + 1) === (name + '=')) {
+            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+            break;
+          }
+        }
+      }
+      return cookieValue;
+    }
+  </script>
+
+{% endblock %}

@@ -1,0 +1,111 @@
+{% extends "webauth/base.html" %}
+
+{% block title %}Authentication Required{% endblock %}
+
+{% block content %}
+  <div class="row justify-content-md-center">
+    <div class="col col-lg-5">
+      <div class="card shadow bg-light">
+        <h4 class="card-header">Authentication Required</h4>
+        <div class="card-body">
+          <p class="card-text">This resource requires authentication with a security key to continue.</p>
+          <button id="begin" type="button" class="btn btn-primary">Begin</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+const nextUrl = new URL(window.location.href).searchParams.get("next");
+
+document.getElementById("begin").addEventListener("click", begin);
+
+async function begin() {
+    const response = await fetch("{% url 'webauth:verification' %}");
+    const data = await response.json();
+
+    const verificationArgs = {
+        publicKey: {
+            challenge: hex_to_binary(data.publicKey.challenge),
+            allowCredentials: data.publicKey.allowCredentials.map(cred => ({
+                id: hex_to_binary(cred.id),
+                type: cred.type,
+                transports: cred.transports,
+            })),
+            timeout: data.publicKey.timeout,
+        },
+    };
+
+    try {
+        const assertion = await navigator.credentials.get(verificationArgs);
+        await verify_on_server(assertion);
+    } catch (e) {
+        console.error("getting credential from browser failed", e);
+    }
+}
+
+async function verify_on_server(assertion) {
+    const data = {
+        id: assertion.id,
+        rawId: buf_to_base64(assertion.rawId),
+        response: {
+            authenticatorData: buf_to_base64(assertion.response.authenticatorData),
+            clientDataJSON: buf_to_base64(assertion.response.clientDataJSON),
+            signature: buf_to_base64(assertion.response.signature),
+            userHandle: buf_to_base64(assertion.response.userHandle),
+        },
+        type: assertion.type,
+    };
+    try {
+        await fetch("{% url 'webauth:verification' %}", {
+            method: "POST",
+            headers: {
+                "content-type": "application/json",
+                "X-CSRFToken": getCookie("csrftoken"),
+            },
+            body: JSON.stringify(data),
+        });
+        window.location.href = nextUrl;
+    } catch (e) {
+        console.error("Verifying on server failed", e);
+    }
+}
+
+function hex_to_binary(hex_str) {
+    const a = hex_str.match(/.{2}/g)
+        .map(c => parseInt(c, 16));
+    return new Uint8Array(a);
+}
+
+function buf_to_base64(buffer) {
+    const a = new Uint8Array(buffer);
+    let s = "";
+
+    for (const n of a) {
+        s += String.fromCharCode(n);
+    }
+
+  return btoa(s)
+        .replace(/\+/g, "-")
+        .replace(/\//g, "_")
+        .replace(/=/g, "");
+}
+
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            // Does this cookie string begin with the name we want?
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+</script>
+
+{% endblock %}

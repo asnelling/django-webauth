@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block title %}Profile{% endblock %}
+
+{% block content %}
+<div class="row justify-content-md-center">
+  <div class="col-lg-8">
+    <h1>Profile</h1>
+    <p>Username: <strong>{{ user.username }}</strong></p>
+    <p><a href="{% url 'password_change' %}">Change password</a></p>
+    <form method="post" action="{% url 'profile' %}">
+      {% csrf_token %}
+      {{ form }}
+      <button type="submit" class="btn btn-primary">Save Changes</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

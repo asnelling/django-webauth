@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block title %}Login{% endblock %}
+
+{% block content %}
+  <div class="row justify-content-md-center">
+    <div class="col col-lg-4">
+      <div class="card shadow bg-light">
+        <h4 class="card-header">Login</h4>
+        <form class="card-body" method="post" action="{% url 'login' %}">
+          {% csrf_token %}
+
+          <p class="card-text">Don&apos;t have an account? <a href="{% url 'register' %}">Register</a></p>
+
+          {% if form.errors %}
+            <p class="text-danger">Your username and password didn't match. Please try again.</p>
+          {% endif %}
+
+          {% if next %}
+            {% if user.is_authenticated %}
+              <p class="text-danger">Your account doesn't have access to this page. To proceed,
+                please login with an account that has access.</p>
+            {% else %}
+              <p>Please login to see this page.</p>
+            {% endif %}
+          {% endif %}
+          {{ form }}
+          <div class="mb-3">
+            <button type="submit" class="btn btn-primary">Login</button>
+          </div>
+          <input type="hidden" name="next" value="{{ next }}">
+          <a class="card-link" href="{% url 'password_reset' %}">Lost
+            password?</a>
+        </form>
+      </div>
+    </div>
+  </div>
+{% endblock %}
