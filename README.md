@@ -3,7 +3,7 @@
 Multi-Factor Authentication (MFA, 2FA) for Django using the
 [Web Authentication API][api].
 
-![django-webauth demo](demo.gif)
+![django-webauth demo](https://raw.githubusercontent.com/asnelling/django-webauth/master/demo.gif)
 
 ## Quick Start
 
