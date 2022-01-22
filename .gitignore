@@ -3,3 +3,5 @@
 __pycache__/
 *.pyc
 *.sqlite3
+/dist/
+/*.egg-info/
