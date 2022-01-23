@@ -10,6 +10,12 @@ Multi-Factor Authentication (MFA, 2FA) for Django using the
 This alpha stage software is **not production ready** and requires further
 hardening before it can be safely deployed into the wild.
 
+## Demo
+
+A live demo is available at https://django-webauth.azurewebsites.net/
+
+You may create an account to try it out at https://django-webauth.azurewebsites.net/register/
+
 ## Quick Start
 
 1. Install `django-webauth` using pip
