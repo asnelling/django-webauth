@@ -5,7 +5,7 @@ Multi-Factor Authentication (MFA, 2FA) for Django using the
 
 ![django-webauth demo](https://raw.githubusercontent.com/asnelling/django-webauth/master/demo.gif)
 
-### Security Disclaimer
+## Security Disclaimer
 
 This alpha stage software is **not production ready** and requires further
 hardening before it can be safely deployed into the wild.
